@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Store {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  location   String
+  seat       Int
+  capacity   Int
+  created_at DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  admins StoreAdmin[]
+  queues Queue[]
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  role       Role     @default(USER)
+  created_at DateTime @default(now())
+
+  stores StoreAdmin[]
+  queues Queue[]
+}
+
+model StoreAdmin {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  storeId    Int
+  created_at DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id])
+  store Store @relation(fields: [storeId], references: [id])
+}
+
+model Queue {
+  id        Int         @id @default(autoincrement())
+  userId    Int?
+  storeId   Int
+  guestName String
+  rank      Int
+  status    QueueStatus
+  createdAt DateTime    @default(now())
+  store     Store       @relation(fields: [storeId], references: [id])
+  user      User?       @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum QueueStatus {
+  WAITING
+  CALLED
+  COMPLETED
+  NO_SHOW
+}
