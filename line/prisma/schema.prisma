@@ -13,11 +13,12 @@ model Store {
   location   String
   seat       Int
   capacity   Int
-  created_at DateTime @default(now())
+  createdAt DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
   admins StoreAdmin[]
-  queues Queue[]
+  reservation Reservation[]
+  waiting     Waiting[]
 }
 
 model User {
@@ -27,29 +28,44 @@ model User {
   created_at DateTime @default(now())
 
   stores StoreAdmin[]
-  queues Queue[]
+  reservation Reservation[]
+  waiting     Waiting[]
 }
 
 model StoreAdmin {
   id         Int      @id @default(autoincrement())
   userId     Int
   storeId    Int
-  created_at DateTime @default(now())
+  createdAt DateTime @default(now())
 
   user  User  @relation(fields: [userId], references: [id])
   store Store @relation(fields: [storeId], references: [id])
 }
 
-model Queue {
+model Reservation {
   id        Int         @id @default(autoincrement())
   userId    Int?
   storeId   Int
   guestName String
-  rank      Int
-  status    QueueStatus
+  phone     String
+  reservationCount      Int
+  status    ReserveStatus @default(WAITING)
   createdAt DateTime    @default(now())
   store     Store       @relation(fields: [storeId], references: [id])
   user      User?       @relation(fields: [userId], references: [id])
+  waiting     Waiting[]
+}
+
+model Waiting{
+  id  Int @id @default(autoincrement())
+  userId Int?
+  storeId Int
+  reserverId Int
+  createdAt DateTime @default(now())
+
+  user  User?  @relation(fields: [userId], references: [id])
+  store Store @relation(fields: [storeId], references: [id])
+  reserver Reservation @relation(fields: [reserverId], references: [id])
 }
 
 enum Role {
@@ -57,7 +73,7 @@ enum Role {
   ADMIN
 }
 
-enum QueueStatus {
+enum ReserveStatus {
   WAITING
   CALLED
   COMPLETED
