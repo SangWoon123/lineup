@@ -26,9 +26,9 @@ export async function createReservationAction(data: ReservationInput) {
                 guestName: guestName,
                 phone: phone,
                 reservationCount: Number(count),
+                // status: "WAITING"
             },
         });
-
         return { success: true, data: result };
     } catch (error) {
         console.error('서버 액션 에러:', error);

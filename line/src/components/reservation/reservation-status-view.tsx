@@ -2,9 +2,10 @@
 import { useEffect } from 'react';
 import { Separator } from '../ui/separator';
 
-export function ReservationStatusView({ storeId }: { storeId: number }) {
+export function ReservationStatusView({ reservationId, storeId }: { reservationId: number; storeId: number }) {
     useEffect(() => {
-        const eventSource = new EventSource(`/api/reserve/${storeId}`);
+        console.log('조회', reservationId);
+        const eventSource = new EventSource(`/api/reserve/${storeId}?reservationId=${reservationId}`);
         eventSource.onmessage = (event) => {
             console.log(event);
         };

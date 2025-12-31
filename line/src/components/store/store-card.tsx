@@ -13,21 +13,6 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '../ui/input';
-import { Label } from '@radix-ui/react-label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { Separator } from '../ui/separator';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '../ui/alert-dialog';
 import { ReservationStatusView } from '../reservation/reservation-status-view';
 import { ReservationPopUpCard } from '../reservation/reservation-popup';
 import { useState } from 'react';
@@ -85,7 +70,7 @@ export function StoreCard({ data }: StoreCardProps) {
                     {!isReserved ? (
                         <ReservationPopUpCard storeId={data.id} onSuccess={(data) => handleSuccess(data)} />
                     ) : (
-                        <ReservationStatusView storeId={data.id} />
+                        <ReservationStatusView reservationId={resData.reservationId} storeId={data.id} />
                     )}
                 </DialogContent>
             </Dialog>

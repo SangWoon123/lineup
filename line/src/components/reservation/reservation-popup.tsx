@@ -21,6 +21,7 @@ import { createReservationAction } from '@/app/reservation/actions';
 
 export function ReservationPopUpCard({ storeId, onSuccess }: { storeId: number; onSuccess: (data: any) => void }) {
     const [data, setData] = useState<any>({
+        reservationId: null,
         storeId: storeId,
         guestName: '',
         phone: '',
@@ -29,9 +30,24 @@ export function ReservationPopUpCard({ storeId, onSuccess }: { storeId: number; 
 
     // 예약 확정 핸들러
     const handleConfirm = async () => {
-        console.log(data);
-        const result = await createReservationAction(data);
-        if (result.success) onSuccess(data);
+        const response = await createReservationAction(data);
+
+        if (response.success) {
+            /**
+           * 리액트에서는 state 를 변경해도 바로 반영되지 않고 변경할 계획 리스트에 넣는 개념
+           * 
+           * setData((prev:any) => ({...prev,reservationId: response.data?.id,}));
+             onSuccess(data);
+             : response.data?.id 값이 null로 들어옴
+           */
+
+            const updatedData = {
+                ...data,
+                reservationId: response.data?.id,
+            };
+            setData(updatedData);
+            onSuccess(updatedData);
+        }
     };
 
     return (
