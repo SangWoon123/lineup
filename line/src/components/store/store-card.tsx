@@ -38,6 +38,12 @@ interface StoreCardProps {
 
 export function StoreCard({ data }: StoreCardProps) {
     const [isReserved, setIsReserved] = useState(false);
+    const [resData, setResData] = useState<any>(null);
+
+    const handleSuccess = (data: any) => {
+        setResData(data);
+        setIsReserved(true);
+    };
     return (
         <>
             <Dialog
@@ -77,9 +83,9 @@ export function StoreCard({ data }: StoreCardProps) {
                         <DialogDescription>해당 매장을 예약해서 이용해보세요.</DialogDescription>
                     </DialogHeader>
                     {!isReserved ? (
-                        <ReservationPopUpCard onSuccess={() => setIsReserved(true)} />
+                        <ReservationPopUpCard storeId={data.id} onSuccess={(data) => handleSuccess(data)} />
                     ) : (
-                        <ReservationStatusView storeId={data.id}/>
+                        <ReservationStatusView storeId={data.id} />
                     )}
                 </DialogContent>
             </Dialog>

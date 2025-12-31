@@ -1,3 +1,4 @@
+'use client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { CalendarCheck, Info } from 'lucide-react';
 import { Input } from '../ui/input';
@@ -15,8 +16,24 @@ import {
     AlertDialogTrigger,
 } from '../ui/alert-dialog';
 import { Button } from '../ui/button';
+import { useState } from 'react';
+import { createReservationAction } from '@/app/reservation/actions';
 
-export function ReservationPopUpCard({ onSuccess }: { onSuccess: () => void }) {
+export function ReservationPopUpCard({ storeId, onSuccess }: { storeId: number; onSuccess: (data: any) => void }) {
+    const [data, setData] = useState<any>({
+        storeId: storeId,
+        guestName: '',
+        phone: '',
+        count: 1,
+    });
+
+    // 예약 확정 핸들러
+    const handleConfirm = async () => {
+        console.log(data);
+        const result = await createReservationAction(data);
+        if (result.success) onSuccess(data);
+    };
+
     return (
         <Tabs defaultValue="reserve" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
@@ -34,15 +51,30 @@ export function ReservationPopUpCard({ onSuccess }: { onSuccess: () => void }) {
                 <div className="grid gap-4">
                     <div className="grid gap-2">
                         <Label htmlFor="guestName">예약자 성함</Label>
-                        <Input id="guestName" placeholder="성함을 입력하세요" />
+                        <Input
+                            id="guestName"
+                            placeholder="성함을 입력하세요"
+                            onChange={(e) => setData({ ...data, guestName: e.target.value })}
+                        />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="phone">연락처</Label>
-                        <Input id="phone" type="tel" placeholder="010-0000-0000" />
+                        <Input
+                            id="phone"
+                            type="tel"
+                            placeholder="010-0000-0000"
+                            onChange={(e) => setData({ ...data, phone: e.target.value })}
+                        />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="count">방문 인원수</Label>
-                        <Input id="count" type="number" defaultValue={1} min={1} />
+                        <Input
+                            id="count"
+                            type="number"
+                            defaultValue={data.count}
+                            min={1}
+                            onChange={(e) => setData({ ...data, count: parseInt(e.target.value, 10) })}
+                        />
                     </div>
                 </div>
 
@@ -58,7 +90,7 @@ export function ReservationPopUpCard({ onSuccess }: { onSuccess: () => void }) {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel>Cancle</AlertDialogCancel>
-                            <AlertDialogAction onClick={onSuccess}>Action</AlertDialogAction>
+                            <AlertDialogAction onClick={() => handleConfirm()}>Action</AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>
