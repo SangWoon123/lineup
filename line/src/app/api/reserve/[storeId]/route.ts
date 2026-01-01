@@ -19,8 +19,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
      * 예약 결과
      */
     const result = await processStoreReservation(storeId, reservationId);
-    console.log(result);
-
     const stream = new ReadableStream({
         start(controller) {
             const encoder = new TextEncoder();

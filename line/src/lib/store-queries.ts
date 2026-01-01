@@ -44,7 +44,31 @@ export async function processStoreReservation(storeId: string, reservationId: st
                     where: { id: Number(reservationId) },
                     data: { status: 'COMPLETED' },
                 });
-                return updatedReservation;
+                return { status: 'COMPLETE', data: updatedReservation };
+            } else {
+                // 예약자가 꽉 찬 경우 Waiting 테이블에 데이터를 넣는다
+
+                const waitingEntry = await tx.waiting.create({
+                    data: {
+                        storeId: store.id,
+                        reserverId: Number(reservationId),
+                    },
+                });
+
+                const countAhead = await tx.waiting.count({
+                    where: {
+                        storeId: store.id,
+                        createdAt: {
+                            lt: waitingEntry.createdAt,
+                        },
+                    },
+                });
+
+                return {
+                    status: 'WAITING',
+                    data: waitingEntry,
+                    waitingOrder: countAhead + 1,
+                };
             }
         });
 

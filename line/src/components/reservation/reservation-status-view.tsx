@@ -1,19 +1,31 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Separator } from '../ui/separator';
+import { ReservationSuccessView } from './reservation-success-view';
 
 export function ReservationStatusView({ reservationId, storeId }: { reservationId: number; storeId: number }) {
+    const [isComplete, setIsComplete] = useState<boolean>(false);
+
     useEffect(() => {
-        console.log('조회', reservationId);
         const eventSource = new EventSource(`/api/reserve/${storeId}?reservationId=${reservationId}`);
         eventSource.onmessage = (event) => {
-            console.log(event);
+            console.log(event.data);
+
+            const data = JSON.parse(event.data);
+            const status = data.status;
+            if (status === 'COMPLETE') {
+                setIsComplete(true);
+            }
         };
         return () => {
             eventSource.close();
             console.log('닫는다');
         };
-    }, [storeId]);
+    }, [storeId, reservationId]);
+
+    if (isComplete) {
+        return <ReservationSuccessView onConfirm={() => window.location.reload()} />;
+    }
     return (
         <div>
             <Separator></Separator>
