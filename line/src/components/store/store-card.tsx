@@ -47,7 +47,9 @@ export function StoreCard({ data }: StoreCardProps) {
                         </div>
                         <Badge variant="secondary" className="px-2 py-1">
                             <Users className="w-3 h-3" />
-                            <span className="font-medium">{data.seat} / 100</span>
+                            <span className="font-medium">
+                                {data.seat} / {data.capacity}
+                            </span>
                         </Badge>
                     </CardHeader>
                     {/* <CardContent>
