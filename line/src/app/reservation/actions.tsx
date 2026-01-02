@@ -1,5 +1,6 @@
 'use server';
 import prisma from '@/lib/prisma';
+import { cancleReservationInDB } from '@/lib/store-queries';
 
 interface ReservationInput {
     storeId: number;
@@ -26,12 +27,21 @@ export async function createReservationAction(data: ReservationInput) {
                 guestName: guestName,
                 phone: phone,
                 reservationCount: Number(count),
-                // status: "WAITING"
+                // status: "WAITING" (기본값)
             },
         });
         return { success: true, data: result };
     } catch (error) {
         console.error('서버 액션 에러:', error);
         return { success: false, error: '예약 처리 중 오류가 발생했습니다.' };
+    }
+}
+
+export async function cancleReservationAction(reservationId: number) {
+    try {
+        return await cancleReservationInDB(reservationId);
+    } catch (error) {
+        console.error('서버 액션 에러:', error);
+        return { success: false, error: '예약취소 처리 중 오류가 발생했습니다.' };
     }
 }
