@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Store {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  location   String
+  seat       Int
+  capacity   Int
+  createdAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  admins StoreAdmin[]
+  reservation Reservation[]
+  waiting     Waiting[]
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  role       Role     @default(USER)
+  created_at DateTime @default(now())
+
+  stores StoreAdmin[]
+  reservation Reservation[]
+  waiting     Waiting[]
+}
+
+model StoreAdmin {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  storeId    Int
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id])
+  store Store @relation(fields: [storeId], references: [id])
+}
+
+model Reservation {
+  id        Int         @id @default(autoincrement())
+  userId    Int?
+  storeId   Int
+  guestName String
+  phone     String
+  reservationCount      Int
+  status    ReserveStatus @default(WAITING)
+  createdAt DateTime    @default(now())
+  store     Store       @relation(fields: [storeId], references: [id])
+  user      User?       @relation(fields: [userId], references: [id])
+  waiting     Waiting[]
+}
+
+model Waiting{
+  id  Int @id @default(autoincrement())
+  userId Int?
+  storeId Int
+  reserverId Int
+  createdAt DateTime @default(now())
+
+  user  User?  @relation(fields: [userId], references: [id])
+  store Store @relation(fields: [storeId], references: [id])
+  reserver Reservation @relation(fields: [reserverId], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ReserveStatus {
+  WAITING
+  CALLED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
