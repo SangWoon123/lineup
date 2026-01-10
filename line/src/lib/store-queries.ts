@@ -61,7 +61,7 @@ export async function processStoreReservation(storeId: string, reservationId: st
                     },
                 });
 
-                // 예약내역이 있으면
+                // 예약내역이 없으면
                 if (!isReserved) {
                     const waitingEntry = await tx.waiting.create({
                         data: {
@@ -76,6 +76,12 @@ export async function processStoreReservation(storeId: string, reservationId: st
                             createdAt: {
                                 lt: waitingEntry.createdAt,
                             },
+                            reserver: {
+                                // 웨이팅 대기열 카운트할때 데이터중 예약 취소,완료는 제외해야 카운트 성공
+                                status: {
+                                    notIn: ['CANCELLED', 'COMPLETED'],
+                                },
+                            },
                         },
                     });
 
@@ -89,6 +95,12 @@ export async function processStoreReservation(storeId: string, reservationId: st
                         where: {
                             storeId: store.id,
                             createdAt: { lt: isReserved.createdAt },
+                            reserver: {
+                                // 웨이팅 대기열 카운트할때 데이터중 예약 취소,완료는 제외해야 카운트 성공
+                                status: {
+                                    notIn: ['CANCELLED', 'COMPLETED'],
+                                },
+                            },
                         },
                     });
 
