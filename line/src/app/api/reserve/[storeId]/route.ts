@@ -19,6 +19,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
      * 예약 결과
      */
     const result = await processStoreReservation(storeId, reservationId);
+    let interval: NodeJS.Timeout;
+
     const stream = new ReadableStream({
         start(controller) {
             const encoder = new TextEncoder();
@@ -31,20 +33,30 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             // 데이터 전송
             sendData(result);
 
-            const interval = setInterval(async () => {
+            interval = setInterval(async () => {
                 const isKeeping = await processStoreReservation(storeId, reservationId);
 
                 if (isKeeping.status === 'CANCELLED' || isKeeping.status === 'COMPLETE') {
-                    console.log(`[종료] 예약 ID ${reservationId} 통신 종료`);
                     sendData(isKeeping);
                     clearInterval(interval); // 클로저
+                    controller.close();
                     return;
                 }
                 sendData(isKeeping);
             }, 2000);
+
+            request.signal.addEventListener('abort', () => {
+                clearInterval(interval);
+                try {
+                    controller.close();
+                } catch (e) {
+                    // 이미 닫힌 경우 무시
+                }
+            });
         },
         cancel() {
             console.log('SSE를 끊습니다.');
+            clearInterval(interval);
         },
     });
 
