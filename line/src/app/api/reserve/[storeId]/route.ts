@@ -30,6 +30,18 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
             // 데이터 전송
             sendData(result);
+
+            const interval = setInterval(async () => {
+                const isKeeping = await processStoreReservation(storeId, reservationId);
+
+                if (isKeeping.status === 'CANCELLED' || isKeeping.status === 'COMPLETE') {
+                    console.log(`[종료] 예약 ID ${reservationId} 통신 종료`);
+                    sendData(isKeeping);
+                    clearInterval(interval); // 클로저
+                    return;
+                }
+                sendData(isKeeping);
+            }, 2000);
         },
         cancel() {
             console.log('SSE를 끊습니다.');

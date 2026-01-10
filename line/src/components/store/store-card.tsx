@@ -29,6 +29,10 @@ export function StoreCard({ data }: StoreCardProps) {
         setResData(data);
         setIsReserved(true);
     };
+
+    const handleCancle = () => {
+        setIsReserved(false);
+    };
     return (
         <>
             <Dialog
@@ -72,7 +76,11 @@ export function StoreCard({ data }: StoreCardProps) {
                     {!isReserved ? (
                         <ReservationPopUpCard storeId={data.id} onSuccess={(data) => handleSuccess(data)} />
                     ) : (
-                        <ReservationStatusView reservationId={resData.reservationId} storeId={data.id} />
+                        <ReservationStatusView
+                            reservationId={resData.reservationId}
+                            storeId={data.id}
+                            onCancelSuccess={handleCancle}
+                        />
                     )}
                 </DialogContent>
             </Dialog>

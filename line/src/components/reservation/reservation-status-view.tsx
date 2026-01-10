@@ -1,16 +1,38 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Separator } from '../ui/separator';
 import { ReservationSuccessView } from './reservation-success-view';
-import { Spinner } from '../ui/spinner';
-import { Loader2, User } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { Button } from '../ui/button';
+import { cancleReservationAction } from '@/app/reservation/actions';
 
-export function ReservationStatusView({ reservationId, storeId }: { reservationId: number; storeId: number }) {
+export function ReservationStatusView({
+    reservationId,
+    storeId,
+    onCancelSuccess,
+}: {
+    reservationId: number;
+    storeId: number;
+    onCancelSuccess: () => void;
+}) {
     const [isComplete, setIsComplete] = useState<boolean>(false);
     const [waitingNumber, setWaitingNumber] = useState<number>();
+    // useEffect eventSource를 관리하기위해서 useRef사용
+    const eventSourceRef = useRef<EventSource>(null);
+
+    const handleCancel = async () => {
+        const result = await cancleReservationAction(reservationId);
+        console.log(result);
+        if (result.success) {
+            eventSourceRef.current?.close();
+            onCancelSuccess();
+        }
+    };
 
     useEffect(() => {
         const eventSource = new EventSource(`/api/reserve/${storeId}?reservationId=${reservationId}`);
+        eventSourceRef.current = eventSource;
+
         eventSource.onmessage = (event) => {
             console.log(event.data);
 
@@ -24,6 +46,7 @@ export function ReservationStatusView({ reservationId, storeId }: { reservationI
         };
         return () => {
             eventSource.close();
+            eventSourceRef.current = null;
             console.log('닫는다');
         };
     }, [storeId, reservationId]);
@@ -33,7 +56,7 @@ export function ReservationStatusView({ reservationId, storeId }: { reservationI
     }
 
     return (
-        <div className="w-full py-4">
+        <div className="w-full py-4 space-y-4">
             <Separator className="mb-6" />
 
             <div className="flex flex-col items-center justify-center space-y-6 py-4">
@@ -62,6 +85,8 @@ export function ReservationStatusView({ reservationId, storeId }: { reservationI
             </div>
 
             <Separator className="mt-6" />
+
+            <Button onClick={() => handleCancel()}>취소하기</Button>
         </div>
     );
 }

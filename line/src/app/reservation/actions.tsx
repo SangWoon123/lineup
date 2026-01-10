@@ -42,6 +42,6 @@ export async function cancleReservationAction(reservationId: number) {
         return await cancleReservationInDB(reservationId);
     } catch (error) {
         console.error('서버 액션 에러:', error);
-        return { success: false, error: '예약취소 처리 중 오류가 발생했습니다.' };
+        return { success: false, error: `예약취소 처리 중 오류가 발생했습니다. ${error}` };
     }
 }

@@ -77,5 +77,6 @@ enum ReserveStatus {
   WAITING
   CALLED
   COMPLETED
+  CANCELLED
   NO_SHOW
 }
