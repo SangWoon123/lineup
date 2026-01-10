@@ -1,40 +1,44 @@
-🚩 LineUp (실시간 매장 예약 시스템)
-이 프로젝트는 실시간으로 매장 예약 현황을 확인하고 대기 순번을 관리하는 토이프로젝트 입니다.
+# Line Up (실시간 예약·대기 관리 서비스)
 
-⚙️ 환경 설정 (Environment Setup)
-로컬 개발 환경을 구축하기 위해 아래 단계를 순서대로 진행하세요.
+지금 몇 번째인지 바로 확인하는 **실시간 예약 및 대기 관리 서비스**입니다. 사용자는 매장의 예약 가능 여부를 확인하고, 대기 순번을 실시간으로 추적할 수 있습니다.
 
-1. 프로젝트 이동 및 패키지 설치
-   먼저 프로젝트 폴더로 이동한 뒤 필요한 패키지를 설치합니다.
+## 🚀 주요 기능
 
-Bash
+-   **실시간 대기 확인**: Server-Sent Events (SSE)를 통해 내 앞의 대기 팀 수를 실시간으로 업데이트합니다.
+-   **간편 예약 시스템**: 사용자 친화적인 UI로 손쉽게 예약을 진행할 수 있습니다.
+-   **대기 상태 관리**: 예약 확정 전/후의 상태를 직관적으로 보여주며, 대기 중 이탈 방지를 위한 경고 기능을 제공합니다.
+-   **매장 정보 조회**: 매장의 위치, 수용 인원, 잔여 좌석 등의 정보를 확인할 수 있습니다.
 
-cd lineup
-npm install 2. 데이터베이스 설정 (.env)
-프로젝트 루트 디렉토리에 .env 파일을 생성하고 아래 내용을 입력합니다. 데이터베이스 연결 주소는 본인의 PostgreSQL 설정에 맞게 수정하세요.
+## 📦 설치 및 실행 방법
 
-파일 경로: ./.env
+1.  **프로젝트 클론**
 
-코드 스니펫
+    ```bash
+    git clone https://github.com/SangWoon123/lineup.git
+    cd lineup
+    ```
 
-# 데이터베이스 연결 URL (PostgreSQL)
+2.  **의존성 설치**
 
-# 형식: postgresql://사용자명:비밀번호@호스트:포트/DB명
+    ```bash
+    npm install
+    ```
 
-DATABASE_URL="postgresql://line:1234@localhost:5432/linup?schema=public" 3. 데이터베이스 스키마 적용
-Prisma를 사용하여 데이터베이스 모델을 생성하고 스키마를 동기화합니다.
+3.  **환경 변수 설정**
+    `.env` 파일을 생성하고 데이터베이스 연결 정보를 설정하세요.
 
-Bash
+    ```env
+    DATABASE_URL="your-database-connection-string"
+    ```
 
-# Prisma 클라이언트 생성
+4.  **데이터베이스 마이그레이션**
 
-npx prisma generate
+    ```bash
+    npx prisma migrate dev
+    ```
 
-# DB 스키마 동기화 (테이블 생성)
-
-npx prisma db push 4. 개발 서버 실행
-모든 설정이 완료되었다면 아래 명령어로 서버를 실행합니다.
-
-Bash
-
-npm run dev
+5.  **개발 서버 실행**
+    ```bash
+    npm run dev
+    ```
+    브라우저에서 `http://localhost:3000`으로 접속하여 확인합니다.
