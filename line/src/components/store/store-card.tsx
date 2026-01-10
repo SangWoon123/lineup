@@ -13,6 +13,16 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { ReservationStatusView } from '../reservation/reservation-status-view';
 import { ReservationPopUpCard } from '../reservation/reservation-popup';
 import { useState } from 'react';
@@ -22,6 +32,8 @@ interface StoreCardProps {
 }
 
 export function StoreCard({ data }: StoreCardProps) {
+    const [open, setOpen] = useState(false);
+    const [showExitAlert, setShowExitAlert] = useState(false);
     const [isReserved, setIsReserved] = useState(false);
     const [resData, setResData] = useState<any>(null);
 
@@ -33,15 +45,25 @@ export function StoreCard({ data }: StoreCardProps) {
     const handleCancle = () => {
         setIsReserved(false);
     };
+
+    const handleOpenChange = (isOpen: boolean) => {
+        if (isOpen) {
+            setOpen(true);
+        } else {
+            // 닫기 시도 시 항상 경고창 띄우기
+            setShowExitAlert(true);
+        }
+    };
+
+    const confirmClose = () => {
+        setOpen(false);
+        setShowExitAlert(false);
+        setIsReserved(false);
+    };
+
     return (
         <>
-            <Dialog
-                onOpenChange={(open) => {
-                    if (!open) {
-                        setIsReserved(false);
-                    }
-                }}
-            >
+            <Dialog open={open} onOpenChange={handleOpenChange}>
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-xl font-bold">{data.name}</CardTitle>
@@ -84,6 +106,23 @@ export function StoreCard({ data }: StoreCardProps) {
                     )}
                 </DialogContent>
             </Dialog>
+
+            <AlertDialog open={showExitAlert} onOpenChange={setShowExitAlert}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>나가시겠습니까?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            {!isReserved
+                                ? '작성 중인 내용은 저장되지 않습니다.'
+                                : '현재 대기 중입니다. 창을 닫으면 대기 상태 확인이 중단됩니다. 정말 닫으시겠습니까?'}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>취소</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmClose}>확인</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     );
 }

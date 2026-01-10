@@ -5,6 +5,7 @@ import { ReservationSuccessView } from './reservation-success-view';
 import { Loader2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { cancleReservationAction } from '@/app/reservation/actions';
+import { AlertDialog, AlertDialogContent } from '../ui/alert-dialog';
 
 export function ReservationStatusView({
     reservationId,
@@ -22,7 +23,6 @@ export function ReservationStatusView({
 
     const handleCancel = async () => {
         const result = await cancleReservationAction(reservationId);
-        console.log(result);
         if (result.success) {
             eventSourceRef.current?.close();
             onCancelSuccess();
@@ -34,8 +34,6 @@ export function ReservationStatusView({
         eventSourceRef.current = eventSource;
 
         eventSource.onmessage = (event) => {
-            console.log(event.data);
-
             const data = JSON.parse(event.data);
             const status = data.status;
             if (status === 'COMPLETE') {
@@ -47,7 +45,6 @@ export function ReservationStatusView({
         return () => {
             eventSource.close();
             eventSourceRef.current = null;
-            console.log('닫는다');
         };
     }, [storeId, reservationId]);
 

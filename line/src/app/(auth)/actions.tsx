@@ -1,10 +1,11 @@
 'use server';
 import prisma from '@/lib/prisma';
+import { Role } from '@prisma/client';
 
 export async function signUpAction(formData: FormData) {
     const name = formData.get('name') as string;
     const email = formData.get('email') as string;
-    const role = formData.get('role') as string;
+    const role = formData.get('role') as Role;
     const password = formData.get('password') as string;
 
     if (!role || !email) {
@@ -17,6 +18,7 @@ export async function signUpAction(formData: FormData) {
                 email: email,
                 role: role,
             },
+            
         });
         return { success: true };
     } catch (error) {

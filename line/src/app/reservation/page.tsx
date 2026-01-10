@@ -20,7 +20,7 @@ export default async function Register() {
                 </DropdownMenu>
             </div>
             <div className="">
-                <StoreList stores={stores}/>
+                <StoreList stores={stores} />
             </div>
         </div>
     );
